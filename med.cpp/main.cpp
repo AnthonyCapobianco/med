@@ -7,33 +7,33 @@
 //
 
 #include <iostream>
+#include <vector>
 #include <string>
 #include <ctime>
 
 #define newLine "\n"
 using namespace std;
 
-//  String length function
-int arrLength(int *p){
-    int result = (sizeof(p)/sizeof(*p))+1;
-    return result;
-}
 //  Ask for choice function
 char ask(){
     char e;
-    cout << "Please insert the letter of the drug you took" << endl;
+    cout << "Please insert the letter of the drug you took:" << endl;
     cin >> e;
     return e;
 
 };
-//  Array size for ritalin (avoiding pain in the ass if the number changes)
-const int ritArraySize = 4;
+//  Definition of vector
+typedef vector<int> intvect;
+//  Set default size for the vector
+size_t size = 4;
+
 
 //  Class definition
 class drug{
 public:
-    int      doses[ritArraySize]
-            ,dose;
+    intvect  doses;
+    intvect::iterator it;
+    int      dose;
     string   drugName;
 
     void printName(){           /*  Function:         Prints drugName and assign it a letter                            */
@@ -45,14 +45,14 @@ public:
     void isRit(){
         static int i = 1;
         cout << "Please select your dose of " << drugName << ":" << newLine;
-        for (int x = 0;x <= arrLength(doses) ; ++x) {
+        for (int x = 0;x < doses.size() ; ++x) {
             cout << "[" << i << "] " << doses[x] << " mg" << newLine;
             i++;
         }
     };
     bool isValidDose(int e){
         int result = 0;
-        for (int i = 0; i <= arrLength(doses); i++) {
+        for (int i = 0; i < doses.size(); i++) {
             //  If e is in doses[] return true
             result = e == doses[i] ? 1 : result;
         }
@@ -65,6 +65,9 @@ public:
         cout << "Please type the dose taken:" << endl;
         cin >> dose;
 
+    }
+    void addToDoses(int a){
+        doses.push_back(a);
     }
 
 };
@@ -84,7 +87,7 @@ int main(int argc, const char * argv[]) {
     //  Set variables
     char    choice;           /*  User input:         Choice of the drug from the list. a, b or c                         */
     string  drugUsed;         /*  Output:             Name of the drug used.                                              */
-    int     dosage            /*  User input:         Choice of the drug from the list. Int from 1 to ritArraySize (4)    */
+    int     dosage            /*  User input:         Choice of the drug from the list. Int from 1 to size (4)            */
             ,doseUsed   =   0 /*  Output:             Dose used in mg                                                     */
             ,tries      =   0;/*  Error handling:     Is incremented if user inputs an incorrect value for dosage         */
     bool    idiot       =   1 /*  Error handling:     Is set to false if choice is correct                                */
@@ -99,9 +102,9 @@ int main(int argc, const char * argv[]) {
     //  Set values for objects
 
     //  Ritalin
-    int ritDoses[ritArraySize] {5,10,15,20};    /*  Array:  Contains all the values for ritalin.doses[]                 */
-    for(int d = 0; d <= ritArraySize; d++){     /*  Set values from ritDoses[] to the object variable ritalin.doses[]   */
-        ritalin.doses[d] = ritDoses[d];
+    intvect ritDoses {5,10,15,20};              /*  Vector:  Contains all the values for ritalin.doses[]                */
+    for(int d = 0; d < ritDoses.size(); d++){   /*  Set values from ritDoses[] to the object variable ritalin.doses[]   */
+        ritalin.addToDoses(ritDoses[d]);
     }
     ritalin.drugName = "Ritalin";               /*  Set object variable drugName for Ritalin                            */
 
@@ -153,7 +156,7 @@ int main(int argc, const char * argv[]) {
                     //  Is it the first try? If not, try again
                     if ( tries > 0 ){
                         int position = 1;
-                        cout    << "The selection must be between "<< position <<" and "<< ritArraySize
+                        cout    << "The selection must be between "<< position <<" and "<< size
                                 <<". IE: Type " << position <<" for "<< ritalin.doses[position-1] <<"mg,";
                         position++;
                         cout    << position <<" for "<< ritalin.doses[position-1] <<"mg…"
