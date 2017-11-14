@@ -32,22 +32,19 @@ size_t size = 4;
 class drug{
 public:
     intvect  doses;
-    intvect::iterator it;
     int      dose;
+    char     drugID;
     string   drugName;
 
     void printName(){           /*  Function:         Prints drugName and assign it a letter                            */
-        static char i = 'a';
-        cout << "[" << i << "] " << drugName << endl;
-        i++;
+        cout << "[" << drugID << "] " << drugName << endl;
     };
 
     void isRit(){
-        static int i = 1;
         cout << "Please select your dose of " << drugName << ":" << newLine;
         for (int x = 0;x < doses.size() ; ++x) {
-            cout << "[" << i << "] " << doses[x] << " mg" << newLine;
-            i++;
+            char i = 'a' + x;
+            cout << "[" << i << "] " << doses[x] << " mg" << endl;
         }
     };
     bool isValidDose(int e){
@@ -66,8 +63,16 @@ public:
         cin >> dose;
 
     }
+    //  Constructor
     void addToDoses(int a){
         doses.push_back(a);
+    }
+    void setDrugName(string nameString){
+        static char ID = 'a';
+        drugName = nameString;
+        //  drugID = ID unless ID is beyond 'z' (97 d; 7a h) in which case we remove 49 to get '0' (48 d; 30 h)
+        drugID = ID < 'z' ? ID : ID - 49 ;
+        ID++;
     }
 
 };
@@ -106,23 +111,24 @@ int main(int argc, const char * argv[]) {
     for(int d = 0; d < ritDoses.size(); d++){   /*  Set values from ritDoses[] to the object variable ritalin.doses[]   */
         ritalin.addToDoses(ritDoses[d]);
     }
-    ritalin.drugName = "Ritalin";               /*  Set object variable drugName for Ritalin                            */
+    ritalin.setDrugName("Ritalin");             /*  Set object variable drugName for Ritalin                            */
 
     //  Effexor
     effexor.dose = 225;                         /*  Set object variable dose for Effexor                                */
-    effexor.drugName = "Effexor";               /*  Set object variable drugName for Effexor                            */
+    effexor.setDrugName("Effexor");             /*  Set object variable drugName for Effexor                            */
 
     //  Concerta
     concerta.dose = 72;                         /*  Set object variable dose for Concerta                               */
-    concerta.drugName = "Concerta";             /*  Set object variable drugName for Concerta                           */
+    concerta.setDrugName("Concerta");           /*  Set object variable drugName for Concerta                           */
 
     //  Other
-    other.drugName = "other";
+    other.setDrugName("other");
 
     //  Print the drugs
-    concerta.printName();
-    effexor.printName();
+
     ritalin.printName();
+    effexor.printName();
+    concerta.printName();
     other.printName();
 
     //  Ask for choice
@@ -155,12 +161,8 @@ int main(int argc, const char * argv[]) {
                 do{
                     //  Is it the first try? If not, try again
                     if ( tries > 0 ){
-                        int position = 1;
-                        cout    << "The selection must be between "<< position <<" and "<< size
-                                <<". IE: Type " << position <<" for "<< ritalin.doses[position-1] <<"mg,";
-                        position++;
-                        cout    << position <<" for "<< ritalin.doses[position-1] <<"mg…"
-                                << newLine << "Try again:" << endl;
+                        cout << "Try again:" << endl;
+                        ritalin.isRit();
                     }
                     cin >> dosage;
 
