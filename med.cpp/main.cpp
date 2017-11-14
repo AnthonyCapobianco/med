@@ -36,7 +36,7 @@ public:
             ,dose;
     string   drugName;
 
-    void printName(){
+    void printName(){           /*  Function:         Prints drugName and assign it a letter                            */
         static char i = 'a';
         cout << "[" << i << "] " << drugName << endl;
         i++;
@@ -46,38 +46,55 @@ public:
         static int i = 1;
         cout << "Please select your dose of " << drugName << ":" << newLine;
         for (int x = 0;x <= arrLength(doses) ; ++x) {
-            cout << "[" << i << "] " << doses[x] << newLine;
+            cout << "[" << i << "] " << doses[x] << " mg" << newLine;
             i++;
         }
     };
     bool isValidDose(int e){
         int result = 0;
-        for (int i = 0; i <= arrLength(doses); ++i) {
+        for (int i = 0; i <= arrLength(doses); i++) {
             //  If e is in doses[] return true
-            result = e == doses[i] ? 1 : 0;
+            result = e == doses[i] ? 1 : result;
         }
         return result;
+    }
+    void isOther(){
+        cout << "Please type the drug name:" << endl;
+        cin.ignore();
+        getline(cin, drugName);
+        cout << "Please type the dose taken:" << endl;
+        cin >> dose;
+
     }
 
 };
 
-/***********************************************************************************************************************
- *                              Function:           MAIN                                                               *
- ***********************************************************************************************************************/
+/*
+ *                            –––––––––––––––––––––––––––––––––––––
+ *                            |   Function:           MAIN        |
+ *                            –––––––––––––––––––––––––––––––––––––
+ */
 int main(int argc, const char * argv[]) {
+    //  Set time string value
+    time_t  timeResult  =   time(nullptr);
+    string  theTime     =   ctime(&timeResult);
+    //  Using pop_back(); to remove the annoying '\n' in ctime();
+    theTime.pop_back();
+
     //  Set variables
-    char    choice;         /*  User input:         Choice of the drug from the list. a, b or c                         */
-    string  drugUsed;       /*  Output:             Name of the drug used.                                              */
-    int     dosage          /*  User input:         Choice of the drug from the list. Int from 1 to ritArraySize (4)    */
-            ,doseUsed = 0   /*  Output:             Dose used in mg                                                     */
-            ,tries = 0;     /*  Error handling:     Is incremented if user inputs an incorrect value for dosage         */
-    bool    idiot = 1       /*  Error handling:     Is set to false if choice is 'a', 'b' or 'c'                        */
-            ,canCount = 0;  /*  Error handling:     Is set to true if the user inputs a correct value for dosage        */
+    char    choice;           /*  User input:         Choice of the drug from the list. a, b or c                         */
+    string  drugUsed;         /*  Output:             Name of the drug used.                                              */
+    int     dosage            /*  User input:         Choice of the drug from the list. Int from 1 to ritArraySize (4)    */
+            ,doseUsed   =   0 /*  Output:             Dose used in mg                                                     */
+            ,tries      =   0;/*  Error handling:     Is incremented if user inputs an incorrect value for dosage         */
+    bool    idiot       =   1 /*  Error handling:     Is set to false if choice is correct                                */
+            ,canCount   =   0;/*  Error handling:     Is set to true if the user inputs a correct value for dosage        */
 
     //  Set Objects
     drug    concerta
             ,effexor
-            ,ritalin;
+            ,ritalin
+            ,other;
 
     //  Set values for objects
 
@@ -96,10 +113,14 @@ int main(int argc, const char * argv[]) {
     concerta.dose = 72;                         /*  Set object variable dose for Concerta                               */
     concerta.drugName = "Concerta";             /*  Set object variable drugName for Concerta                           */
 
+    //  Other
+    other.drugName = "other";
+
     //  Print the drugs
     concerta.printName();
     effexor.printName();
     ritalin.printName();
+    other.printName();
 
     //  Ask for choice
     choice = ask();                             /*  User input: Setting value for choice using function ask();          */
@@ -131,7 +152,11 @@ int main(int argc, const char * argv[]) {
                 do{
                     //  Is it the first try? If not, try again
                     if ( tries > 0 ){
-                        cout    << "The selection must be between 1 and 4. EI: Type 1 for 5mg, 2 for 10mg…"
+                        int position = 1;
+                        cout    << "The selection must be between "<< position <<" and "<< ritArraySize
+                                <<". IE: Type " << position <<" for "<< ritalin.doses[position-1] <<"mg,";
+                        position++;
+                        cout    << position <<" for "<< ritalin.doses[position-1] <<"mg…"
                                 << newLine << "Try again:" << endl;
                     }
                     cin >> dosage;
@@ -150,12 +175,21 @@ int main(int argc, const char * argv[]) {
 
                 idiot = 0;
                 break;
+            case 'd' :
+
+                other.isOther();
+                drugUsed = other.drugName;
+                doseUsed = other.dose;
+                idiot = 0;
+                break;
         }
     }while (idiot == 1);
 
     //  Print the result (this is mainly for debug but it might stay in prod)
-    cout << /*time goes here <<*/ drugUsed << " " << doseUsed << "mg" << endl;
+    cout << theTime << drugUsed << " " << doseUsed << "mg" << endl;
 
+    //  Almost done! Now we just need to put it in a file.
+    
     return 0;
 }
 
